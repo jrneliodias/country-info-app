@@ -1,9 +1,9 @@
 import { HttpService } from '@nestjs/axios';
-import { Injectable } from '@nestjs/common';
+import { Body, Injectable } from '@nestjs/common';
 import { map } from 'rxjs/operators';
-import { Observable } from 'rxjs';
+import { forkJoin, Observable } from 'rxjs';
 import { ConfigModule, ConfigService } from '@nestjs/config';
-import { BorderCountries, Country } from './app.interfaces';
+import { BorderCountries, Country, CountryData, PopulationData } from './app.interfaces';
 @Injectable()
 export class AppService {
   constructor(
@@ -11,8 +11,12 @@ export class AppService {
     private readonly configService: ConfigService
   ) { }
 
-  getNagerHost(): string {
+  private getNagerHost(): string {
     return this.configService.get<string>('API_NAGER_URL');
+  }
+
+  private getCoutriesNowHost(): string {
+    return this.configService.get<string>('API_COUNTRIESNOW_URL');
   }
   getAllCountries(): Observable<Country[]> {
     const apiUrl = this.getNagerHost();
@@ -22,13 +26,44 @@ export class AppService {
         map((response) => response.data)
       );
   }
-  getBorderCountries(countryCode: string): Observable<BorderCountries> {
-    const apiUrl = this.getNagerHost();
-    const response = this.httpService
-      .get<BorderCountries>(`${apiUrl}/CountryInfo/${countryCode}`)
+  getCountryInfo(countryCode: string, country: string): Observable<CountryData> {
+
+    const borderCountries = this.getBorderCoutries(countryCode)
+
+    const populationData = this.getPopulationData(country)
+
+    return forkJoin([borderCountries, populationData]).pipe(
+      map(([borderCountries, populationData]) => {
+        // Construct the final countryInfo object
+        const countryInfo = {
+          ...borderCountries,
+          iso3: populationData.data.iso3,
+          code: populationData.data.code,
+          populationCounts: populationData.data.populationCounts,
+        };
+        return countryInfo;
+      })
+    );
+  }
+
+
+  private getBorderCoutries(countryCode: string): Observable<BorderCountries> {
+    const apiNagerUrl = this.getNagerHost();
+    return this.httpService
+      .get<BorderCountries>(`${apiNagerUrl}/CountryInfo/${countryCode}`)
       .pipe(
         map((response) => response.data)
       );
-    return response
   }
+  private getPopulationData(country: string): Observable<PopulationData> {
+    const apiCountriesNowUrl = this.getCoutriesNowHost();
+    return this.httpService
+      .post<PopulationData>(`${apiCountriesNowUrl}/population`, {
+        country
+      })
+      .pipe(
+        map((response) => response.data)
+      );
+  }
+
 }

@@ -1,6 +1,6 @@
-import { Controller, Get, Param } from '@nestjs/common';
+import { Body, Controller, Get, Param, Post } from '@nestjs/common';
 import { AppService } from './app.service';
-import { BorderCountries, Country } from './app.interfaces';
+import { BorderCountries, Country, CountryData } from './app.interfaces';
 import { Observable } from 'rxjs';
 
 @Controller()
@@ -12,8 +12,9 @@ export class AppController {
     return this.appService.getAllCountries();
   }
 
-  @Get('/BorderCountries/:countryCode')
-  getBorderCountries(@Param('countryCode') countryCode: string): Observable<BorderCountries> {
-    return this.appService.getBorderCountries(countryCode);
+  @Post('/BorderCountries/:countryCode')
+  getBorderCountries(@Param('countryCode') countryCode: string, @Body() body: { country: string }): Observable<CountryData> {
+    const { country } = body;
+    return this.appService.getCountryInfo(countryCode, country);
   }
 }

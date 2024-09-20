@@ -18,3 +18,27 @@ export interface CountryInfo {
     region: string;
     borders: null;
 }
+
+export interface PopulationData {
+    error: boolean;
+    msg: string;
+    data: {
+        country: string;
+        code: string;
+        iso3: string;
+        populationCounts: {
+            year: number,
+            value: number
+        }
+    }
+}
+
+export type CountryData = BorderCountries & {
+    code: string;
+    iso3: string;
+    populationCounts: {
+        year: number,
+        value: number
+    }
+
+}
