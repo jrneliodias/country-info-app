@@ -3,7 +3,7 @@ import { Injectable } from '@nestjs/common';
 import { map } from 'rxjs/operators';
 import { Observable } from 'rxjs';
 import { ConfigModule, ConfigService } from '@nestjs/config';
-import { Country } from './app.interfaces';
+import { BorderCountries, Country } from './app.interfaces';
 @Injectable()
 export class AppService {
   constructor(
@@ -21,5 +21,14 @@ export class AppService {
       .pipe(
         map((response) => response.data)
       );
+  }
+  getBorderCountries(countryCode: string): Observable<BorderCountries> {
+    const apiUrl = this.getNagerHost();
+    const response = this.httpService
+      .get<BorderCountries>(`${apiUrl}/CountryInfo/${countryCode}`)
+      .pipe(
+        map((response) => response.data)
+      );
+    return response
   }
 }
