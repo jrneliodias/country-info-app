@@ -33,6 +33,18 @@ export interface PopulationData {
     }
 }
 
+export interface CountryFlagData {
+
+    error: boolean;
+    msg: string;
+    data: {
+        name: string;
+        flag: string;
+        iso2: string;
+        iso3: string;
+    }
+}
+
 export type CountryData = BorderCountries & {
     code: string;
     iso3: string;

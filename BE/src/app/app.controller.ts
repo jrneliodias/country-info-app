@@ -14,7 +14,7 @@ export class AppController {
 
   @Post('/BorderCountries/:countryCode')
   getBorderCountries(@Param('countryCode') countryCode: string, @Body() body: { country: string }): Observable<CountryData> {
-    const { country } = body;
-    return this.appService.getCountryInfo(countryCode, country);
+
+    return this.appService.getCountryInfo(countryCode, body);
   }
 }

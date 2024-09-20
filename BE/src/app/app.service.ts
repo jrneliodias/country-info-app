@@ -3,7 +3,7 @@ import { Body, Injectable } from '@nestjs/common';
 import { map } from 'rxjs/operators';
 import { forkJoin, Observable } from 'rxjs';
 import { ConfigModule, ConfigService } from '@nestjs/config';
-import { BorderCountries, Country, CountryData, PopulationData } from './app.interfaces';
+import { BorderCountries, Country, CountryData, CountryFlagData, PopulationData } from './app.interfaces';
 @Injectable()
 export class AppService {
   constructor(
@@ -26,19 +26,25 @@ export class AppService {
         map((response) => response.data)
       );
   }
-  getCountryInfo(countryCode: string, country: string): Observable<CountryData> {
+  getCountryInfo(countryCode: string, body: { country: string }): Observable<CountryData> {
+
+    const { country } = body
 
     const borderCountries = this.getBorderCoutries(countryCode)
 
     const populationData = this.getPopulationData(country)
 
-    return forkJoin([borderCountries, populationData]).pipe(
-      map(([borderCountries, populationData]) => {
+    const countryFlagData = this.getCountryFlagData(countryCode)
+
+    return forkJoin([borderCountries, populationData, countryFlagData]).pipe(
+      map(([borderCountries, populationData, countryFlagData]) => {
         // Construct the final countryInfo object
         const countryInfo = {
           ...borderCountries,
+          iso2: countryFlagData.data.iso2,
           iso3: populationData.data.iso3,
           code: populationData.data.code,
+          flag: countryFlagData.data.flag,
           populationCounts: populationData.data.populationCounts,
         };
         return countryInfo;
@@ -60,6 +66,16 @@ export class AppService {
     return this.httpService
       .post<PopulationData>(`${apiCountriesNowUrl}/population`, {
         country
+      })
+      .pipe(
+        map((response) => response.data)
+      );
+  }
+  private getCountryFlagData(iso2: string): Observable<CountryFlagData> {
+    const apiCountriesNowUrl = this.getCoutriesNowHost();
+    return this.httpService
+      .post<CountryFlagData>(`${apiCountriesNowUrl}/flag/images`, {
+        iso2
       })
       .pipe(
         map((response) => response.data)
