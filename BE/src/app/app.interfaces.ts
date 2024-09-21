@@ -1,5 +1,5 @@
 export interface Country {
-    id: string;
+    countryCode: string;
     name: string;
 }
 
@@ -16,6 +16,7 @@ export interface CountryInfo {
     officialName: string;
     countryCode: string;
     region: string;
+    flag: string;
     borders: null;
 }
 
@@ -48,6 +49,7 @@ export interface CountryFlagData {
 export type CountryData = BorderCountries & {
     code: string;
     iso3: string;
+
     populationCounts: {
         year: number,
         value: number

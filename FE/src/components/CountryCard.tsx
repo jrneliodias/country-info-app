@@ -6,7 +6,7 @@ import Link from "next/link";
 const CountryCard = ({ country }: { country: Country }) => {
   return (
     <Button className="hover:bg-slate-900" key={country.countryCode} asChild>
-      <Link href={`/country/${country.countryCode}`}>{country.name}</Link>
+      <Link href={`/country/${country.name}/${country.countryCode}`}>{country.name}</Link>
     </Button>
   );
 };

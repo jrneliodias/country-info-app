@@ -12,7 +12,7 @@ export class AppController {
     return this.appService.getAllCountries();
   }
 
-  @Post('/BorderCountries/:countryCode')
+  @Post('/CountryInfo/:countryCode')
   getBorderCountries(@Param('countryCode') countryCode: string, @Body() body: { country: string }): Observable<CountryData> {
 
     return this.appService.getCountryInfo(countryCode, body);
