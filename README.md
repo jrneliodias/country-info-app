@@ -1,6 +1,11 @@
 # Country Info App
 
-This app is build with the frontend React, Next js and backend in Nest js.
+<!-- insert image from assets -->
+
+![Country Info App](assets/countrypage.png)
+![Country Info App](assets/homepage.png)
+
+This app provides information about countries. In homepage you can see all available countries. In country page you can see information about selected country and its border countries. You can also see population chart and the flag of selected country fetch by API. In backend, use two api to get data: date.nager.com and countriesnow.space API.
 
 ## Frontend
 
